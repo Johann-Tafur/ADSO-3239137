@@ -42,8 +42,9 @@ app/
 │   ├── Ports/              # KitRepository, LoanRepository, ParticipantRepository, UserRepository, CategoryRepository,
 │   │                       # ReportReader, Clock, PasswordHasher, TokenIssuer, PhotoStorage, TransactionRunner
 │   └── Services/           # LoginService, CreateMentorService, CreateKitService, UpdateKitService, RemoveKitService,
-│                           # SearchKitsService, KitPhotoService, CreateParticipantService, LendKitsService,
-│                           # ReturnItemService, OverdueService, MostRequestedReportService
+│                           # SearchKitsService, KitPhotoService, CreateParticipantService,
+│                           # SearchParticipantsService, LendKitsService, ReturnItemService, GetLoanService,
+│                           # ListLoansService, OverdueService, MostRequestedReportService
 ├── Adapters/
 │   ├── Inbound/Http/       # Controllers, Middleware (JWT, rol), ApiErrorRenderer
 │   ├── Inbound/Console/    # EnsureAdminCommand
