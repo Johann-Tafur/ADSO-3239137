@@ -19,7 +19,7 @@ La base de datos existe desde el día 1: `infra/compose.yaml` levanta PostgreSQL
 
 | # | Tarea | Depende de | Evidencia | Estado |
 |---|---|---|---|---|
-| T-01 | Esqueleto de Laravel conectado al PostgreSQL de `infra` y `GET /api/v1/health` | — | Responde `{"status":"ok"}` · `tests/Feature/HealthTest.php`; `php artisan migrate:status` se conecta a la base | pendiente |
+| T-01 | Esqueleto de Laravel conectado al PostgreSQL de `infra` y `GET /api/v1/health` | — | Responde `{"status":"ok"}` · `tests/Feature/HealthTest.php`; `php artisan migrate:status` se conecta a la base | **hecha** |
 | T-02 | Migración inicial: seis tablas, FK, índices únicos y las cinco categorías | T-01 | Las consultas de `data-model.md` §10 devuelven lo documentado; ninguna columna con `DEFAULT` | pendiente |
 | T-03 | Dominio: `KitReference`, `Units`, `DocumentNumber`, `DateRange` | T-01 | `tests/Unit/Domain/ValueObjectsTest.php`: `ARD-0001` válido, `ard-1` no; unidades ≥ 1; fin ≥ inicio | pendiente |
 | T-04 | Dominio: `Kit` (`withdraw`, `restock`, cambio de total, baja lógica) | T-03 | `tests/Unit/Domain/KitTest.php`: nunca < 0, nunca > total | pendiente |
