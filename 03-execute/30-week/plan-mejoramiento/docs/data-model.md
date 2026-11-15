@@ -18,6 +18,10 @@ Cada regla lleva una de **tres marcas**: **motor** (la impone la base), **solo d
 |---|---|---|
 | Tabla | `snake_case`, inglés, **singular** | `loan_item` |
 | Columna | `snake_case`, inglés, singular, ASCII | `due_at` |
+| Clave primaria | `pk_{tabla}` | `pk_loan_item` |
+| Clave foránea | `fk_{tabla}_{tabla referida}` | `fk_loan_item_kit` |
+| Índice único | `uq_{tabla}_{columnas}` | `uq_kit_reference_active` |
+| Índice de acceso | `ix_{tabla}_{columnas}` | `ix_loan_item_due_open` |
 | Restricción escrita a mano | `ck_{tabla}_{regla}` | `ck_kit_available_range` |
 | Esquema | `robotics` | `robotics.loan` |
 
@@ -124,7 +128,7 @@ porque ningún requisito las pide.
 
 | Regla | Objeto | Marca |
 |---|---|---|
-| Claves primarias de las seis tablas | `PK_*` | **motor** |
+| Claves primarias de las seis tablas | `pk_*` | **motor** |
 | `category.name` único | índice único | **motor** |
 | `participant.document_number` único | índice único | **motor** |
 | `user.username` único | índice único | **motor** |
