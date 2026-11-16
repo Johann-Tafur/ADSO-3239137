@@ -84,7 +84,7 @@ final class Kit
     /** Descuenta una unidad al prestar (CA-06.3). */
     public function withdraw(): void
     {
-        if (! $this->isActive() || $this->availableUnits === 0) {
+        if (! $this->canWithdraw()) {
             throw KitNotAvailable::named($this->name);
         }
         $this->availableUnits--;
@@ -93,7 +93,7 @@ final class Kit
     /** Suma una unidad al devolver (CA-07.1). Nunca supera el total (CA-07.3). */
     public function restock(): void
     {
-        if ($this->availableUnits === $this->totalUnits) {
+        if (! $this->canRestock()) {
             throw new LogicException("Kit {$this->id}: devolver superaría el total de unidades.");
         }
         $this->availableUnits++;
@@ -146,6 +146,18 @@ final class Kit
     }
 
     // ---------- Lectura ----------
+
+    /** ¿Se puede prestar una unidad? Activo y con al menos una disponible. */
+    public function canWithdraw(): bool
+    {
+        return $this->isActive() && $this->availableUnits > 0;
+    }
+
+    /** ¿Se puede devolver una unidad sin pasar del total? */
+    public function canRestock(): bool
+    {
+        return $this->availableUnits < $this->totalUnits;
+    }
 
     public function isActive(): bool
     {
