@@ -63,7 +63,8 @@ tests/Unit/Domain  tests/Unit/Application  tests/Architecture  tests/Feature  te
 | `Participant` | Nombre y documento obligatorios; documento normalizado |
 | `User` | Nombre en minúsculas y recortado; rol `admin` o `mentor` |
 
-`Loan::addItem()` llama a `Kit::withdraw()` antes de añadir la línea; `Loan::returnItem()` llama a `Kit::restock()` una sola vez por línea.
+`Loan::lend()` primero comprueba todas las líneas (cantidad, kits repetidos, unidades) y solo después llama a `Kit::withdraw()`
+en cada kit; `Loan::returnItem()` llama a `Kit::restock()` una sola vez por línea. Si algo falla, ningún kit queda descontado.
 Las reglas que miran varios préstamos (máximo 2 sin devolver, vencidos) las aplica `LendKitsService` con datos que le da `LoanRepository`.
 
 ## 4. Flujo de un préstamo
@@ -77,11 +78,11 @@ sequenceDiagram
     C->>S: lend(participantId, kitIds, userId)
     S->>L: openItemsOf(participantId)
     Note over S: ¿vencidos? → 409 · ¿más de 2? → 422
-    S->>K: findMany(kitIds)
-    Note over S: Loan::addItem() → Kit::withdraw()
-    S->>K: save(kit, expectedVersion)
+    S->>K: findActive(kitId), uno por kit
+    Note over S: Loan::lend() → Kit::withdraw()
+    S->>K: save(kit), con la versión que se leyó
     Note over K: 0 filas afectadas → 409 KIT_NOT_AVAILABLE
-    S->>L: save(loan)
+    S->>L: add(loan)
     Note over S,L: todo dentro de TransactionRunner
 ```
 
