@@ -22,7 +22,7 @@ La base de datos existe desde el día 1: `infra/compose.yaml` levanta PostgreSQL
 | T-01 | Esqueleto de Laravel conectado al PostgreSQL de `infra` y `GET /api/v1/health` | — | Responde `{"status":"ok"}` · `tests/Feature/HealthTest.php`; `php artisan migrate:status` se conecta a la base | **hecha** |
 | T-02 | Migración inicial: seis tablas, FK, índices únicos y las cinco categorías | T-01 | Las consultas de `data-model.md` §10 devuelven lo documentado; ninguna columna con `DEFAULT` · `tests/Integration/SchemaTest.php` | **hecha** |
 | T-03 | Dominio: `KitReference`, `Units`, `DocumentNumber`, `DateRange` | T-01 | `tests/Unit/Domain/ValueObjectsTest.php`: `ARD-0001` válido, `ard-1` no; unidades ≥ 1; fin ≥ inicio | **hecha** |
-| T-04 | Dominio: `Kit` (`withdraw`, `restock`, cambio de total, baja lógica) | T-03 | `tests/Unit/Domain/KitTest.php`: nunca < 0, nunca > total | pendiente |
+| T-04 | Dominio: `Kit` (`withdraw`, `restock`, cambio de total, baja lógica) | T-03 | `tests/Unit/Domain/KitTest.php`: nunca < 0, nunca > total | **hecha** |
 | T-05 | Dominio: `Loan` (`addItem`, `returnItem`, estado calculado, 12 días, máx. 2 líneas) | T-04 | `tests/Unit/Domain/LoanTest.php` con `FixedClock`: `open`, `overdue`, `closed` | pendiente |
 | T-06 | Dominio: `Participant` y `User` | T-03 | `tests/Unit/Domain/ParticipantAndUserTest.php`: `"Laura "` queda `laura`; `User` acepta `admin` y `mentor` y rechaza cualquier otro rol | pendiente |
 | T-07 | Casos de uso de **autenticación** (`LoginService`, `CreateMentorService`) con fakes | T-06 | HU-01 y HU-02 pasan contra fakes; pedir el rol `admin` → `ROLE_NOT_ALLOWED` (CA-02.3) | pendiente |
