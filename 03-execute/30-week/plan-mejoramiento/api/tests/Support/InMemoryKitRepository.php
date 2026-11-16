@@ -17,7 +17,7 @@ use App\Domain\ValueObjects\KitReference;
  * - imita la concurrencia optimista: save() exige la misma versión y la sube en 1 (ADR-002);
  * - imita el índice único parcial de referencia entre kits activos.
  */
-final class InMemoryKitRepository implements KitRepository
+final class InMemoryKitRepository implements KitRepository, Snapshottable
 {
     /** @var array<string, Kit> */
     private array $stored = [];
@@ -25,6 +25,8 @@ final class InMemoryKitRepository implements KitRepository
     private int $sequence = 0;
 
     private bool $failNextSave = false;
+
+    private ?string $failNextSaveOf = null;
 
     public function __construct(private readonly InMemoryCategoryRepository $categories) {}
 
@@ -79,8 +81,11 @@ final class InMemoryKitRepository implements KitRepository
     public function save(Kit $kit): void
     {
         $current = $this->stored[$kit->id()] ?? null;
-        $lostTheRace = $this->failNextSave;
+        $lostTheRace = $this->failNextSave || $this->failNextSaveOf === $kit->id();
         $this->failNextSave = false;
+        if ($this->failNextSaveOf === $kit->id()) {
+            $this->failNextSaveOf = null;
+        }
         if ($lostTheRace || $current === null || $current->version() !== $kit->version()) {
             throw KitNotAvailable::named($kit->name());
         }
@@ -98,6 +103,23 @@ final class InMemoryKitRepository implements KitRepository
     public function stored(string $id): ?Kit
     {
         return $this->stored[$id] ?? null;
+    }
+
+    /** Los kits guardados nunca se modifican (save() guarda una copia nueva), así que basta copiar el arreglo. */
+    public function snapshot(): mixed
+    {
+        return $this->stored;
+    }
+
+    public function restoreSnapshot(mixed $snapshot): void
+    {
+        $this->stored = $snapshot;
+    }
+
+    /** Para las pruebas: el próximo save() de este kit pierde la carrera. */
+    public function failNextSaveOf(string $kitId): void
+    {
+        $this->failNextSaveOf = $kitId;
     }
 
     private function assertReferenceFree(Kit $kit): void

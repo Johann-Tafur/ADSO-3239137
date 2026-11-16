@@ -10,6 +10,7 @@ use App\Domain\Errors\NotFound;
 use App\Domain\Errors\ValidationError;
 use App\Domain\Participant;
 use PHPUnit\Framework\TestCase;
+use Tests\Support\InMemoryLoanRepository;
 use Tests\Support\InMemoryParticipantRepository;
 
 /** T-08 · HU-05: registrar y buscar participantes (CA-05.1, CA-05.2), contra fakes. */
@@ -25,7 +26,7 @@ final class ParticipantServicesTest extends TestCase
     {
         $this->participants = new InMemoryParticipantRepository;
         $this->create = new CreateParticipantService($this->participants);
-        $this->search = new SearchParticipantsService($this->participants);
+        $this->search = new SearchParticipantsService($this->participants, new InMemoryLoanRepository);
     }
 
     /** @param list<Participant> $items @return list<string> */
