@@ -52,6 +52,7 @@ Los errores del framework (validación, ruta inexistente, método no permitido) 
 | `DOCUMENT_TAKEN` | 409 | CA-05.1 |
 | `KIT_HAS_OPEN_LOANS` | 409 | CA-03.5 |
 | `KIT_NOT_AVAILABLE` | 409 | CA-06.3 y RNF-2 (también cuando pierde la carrera por la última unidad) |
+| `KIT_CHANGED` | 409 | Otra petición cambió el kit mientras se editaba, se daba de baja, se cambiaba su foto o se devolvía una línea suya ([ADR-002](adr/adr-002-concurrencia-optimista.md)). Se puede reintentar |
 | `PARTICIPANT_HAS_OVERDUE` | 409 | CA-06.5 |
 | `ITEM_ALREADY_RETURNED` | 409 | CA-07.2 |
 | `PARTICIPANT_LIMIT_EXCEEDED` | 422 | CA-06.4 |
