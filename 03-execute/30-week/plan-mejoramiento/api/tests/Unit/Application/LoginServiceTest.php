@@ -17,13 +17,15 @@ final class LoginServiceTest extends TestCase
 {
     private LoginService $service;
 
+    private FakePasswordHasher $hasher;
+
     protected function setUp(): void
     {
         $users = new InMemoryUserRepository;
-        $hasher = new FakePasswordHasher;
-        $users->add(User::create('u-1', 'laura', $hasher->hash('clave-secreta'), Role::Mentor));
+        $this->hasher = new FakePasswordHasher;
+        $users->add(User::create('u-1', 'laura', $this->hasher->hash('clave-secreta'), Role::Mentor));
 
-        $this->service = new LoginService($users, $hasher, new FakeTokenIssuer);
+        $this->service = new LoginService($users, $this->hasher, new FakeTokenIssuer);
     }
 
     public function test_valid_credentials_return_a_bearer_token_for_8_hours(): void
@@ -65,5 +67,7 @@ final class LoginServiceTest extends TestCase
             $this->assertSame('INVALID_CREDENTIALS', $error->errorCode());
             $this->assertSame('Usuario o clave incorrectos.', $error->getMessage());
         }
+        // Exista o no el usuario, se verifica una clave: el tiempo de respuesta no lo delata
+        $this->assertSame(1, $this->hasher->verifications);
     }
 }

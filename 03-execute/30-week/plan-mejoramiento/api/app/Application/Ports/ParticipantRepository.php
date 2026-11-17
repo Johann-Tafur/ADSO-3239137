@@ -15,6 +15,13 @@ interface ParticipantRepository
 
     public function find(string $id): ?Participant;
 
+    /**
+     * Lee el participante y bloquea su fila hasta que termine la transacción (SELECT … FOR UPDATE, ADR-004).
+     * Así dos préstamos simultáneos para la misma persona se atienden uno detrás de otro y el límite de 2 se cuenta bien.
+     * Solo tiene sentido dentro de TransactionRunner::run().
+     */
+    public function lockForLoan(string $id): ?Participant;
+
     public function findByDocument(DocumentNumber $documentNumber): ?Participant;
 
     /**

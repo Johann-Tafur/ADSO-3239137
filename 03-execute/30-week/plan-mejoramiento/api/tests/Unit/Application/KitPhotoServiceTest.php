@@ -5,7 +5,7 @@ namespace Tests\Unit\Application;
 use App\Application\Results\Photo;
 use App\Application\Services\CreateKitService;
 use App\Application\Services\KitPhotoService;
-use App\Domain\Errors\KitNotAvailable;
+use App\Domain\Errors\KitChanged;
 use App\Domain\Errors\NotFound;
 use App\Domain\Errors\ValidationError;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -115,7 +115,7 @@ final class KitPhotoServiceTest extends TestCase
         try {
             $this->service->upload($this->kitId, self::png(10));
             $this->fail('Debió fallar al guardar');
-        } catch (KitNotAvailable) {
+        } catch (KitChanged) {
         }
         $this->assertSame(0, $this->photos->count(), 'no debe quedar una foto huérfana');
     }

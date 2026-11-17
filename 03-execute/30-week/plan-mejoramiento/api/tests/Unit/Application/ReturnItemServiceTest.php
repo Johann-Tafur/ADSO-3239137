@@ -8,7 +8,7 @@ use App\Application\Services\GetLoanService;
 use App\Application\Services\LendKitsService;
 use App\Application\Services\ReturnItemService;
 use App\Domain\Errors\ItemAlreadyReturned;
-use App\Domain\Errors\KitNotAvailable;
+use App\Domain\Errors\KitChanged;
 use App\Domain\Errors\NotFound;
 use App\Domain\Loan;
 use App\Domain\LoanStatus;
@@ -125,7 +125,7 @@ final class ReturnItemServiceTest extends TestCase
         try {
             $this->service->returnItem($this->loan->id(), $this->itemOf(0));
             $this->fail('Debió fallar al guardar el kit');
-        } catch (KitNotAvailable) {
+        } catch (KitChanged) {
         }
         $this->assertFalse($this->loans->find($this->loan->id())->item($this->itemOf(0))->isReturned(), 'la transacción deshizo la línea');
         $this->assertSame(2, $this->kits->stored($this->arduino)->availableUnits());

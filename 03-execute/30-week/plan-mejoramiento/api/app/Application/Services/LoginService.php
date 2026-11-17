@@ -24,19 +24,29 @@ final class LoginService
         private readonly TokenIssuer $tokens,
     ) {}
 
+    /** Hash de relleno para verificar aunque el usuario no exista; se calcula una sola vez. */
+    private ?string $decoyHash = null;
+
     public function login(string $username, string $password): AccessToken
     {
         try {
-            $username = User::normalizeUsername($username);
+            $user = $this->users->findByUsername(User::normalizeUsername($username));
         } catch (ValidationError) {
-            throw InvalidCredentials::create();
+            $user = null;
         }
 
-        $user = $this->users->findByUsername($username);
-        if ($user === null || ! $this->hasher->verify($password, $user->passwordHash())) {
+        // Siempre se verifica una clave, exista o no el usuario: así la respuesta tarda lo mismo
+        // y nadie puede medir el tiempo para saber qué usuarios existen (CA-01.2).
+        $hash = $user?->passwordHash() ?? $this->decoyHash();
+        if (! $this->hasher->verify($password, $hash) || $user === null) {
             throw InvalidCredentials::create();
         }
 
         return new AccessToken($this->tokens->issue($user), $this->tokens->lifetimeSeconds(), $user->role());
+    }
+
+    private function decoyHash(): string
+    {
+        return $this->decoyHash ??= $this->hasher->hash(bin2hex(random_bytes(16)));
     }
 }

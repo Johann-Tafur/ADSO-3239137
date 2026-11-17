@@ -209,6 +209,26 @@ final class LendKitsServiceTest extends TestCase
         $this->assertSame(0, $this->loans->count());
     }
 
+    // ---------- Concurrencia (ADR-004) ----------
+
+    public function test_the_participant_row_is_locked_inside_the_transaction_before_counting(): void
+    {
+        $this->service->lend($this->ana, [$this->kit['ARD-0001']], 'mentor-1');
+
+        $this->assertSame([$this->ana], $this->participants->locked);
+    }
+
+    public function test_a_rejected_loan_still_locked_the_participant_first(): void
+    {
+        $this->service->lend($this->ana, [$this->kit['ARD-0001'], $this->kit['ARD-0002']], 'mentor-1');
+
+        try {
+            $this->service->lend($this->ana, [$this->kit['SEN-0001']], 'mentor-1');
+        } catch (ParticipantLimitExceeded) {
+        }
+        $this->assertCount(2, $this->participants->locked, 'cada préstamo bloquea antes de contar');
+    }
+
     // ---------- Datos que no existen ----------
 
     public function test_an_unknown_participant_is_not_found(): void

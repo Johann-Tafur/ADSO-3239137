@@ -10,10 +10,13 @@ use App\Application\Ports\ParticipantRepository;
 use App\Application\Ports\TransactionRunner;
 use App\Application\Results\LoanView;
 use App\Domain\Errors\DuplicateKitInLoan;
+use App\Domain\Errors\KitChanged;
+use App\Domain\Errors\KitNotAvailable;
 use App\Domain\Errors\NotFound;
 use App\Domain\Errors\ParticipantHasOverdue;
 use App\Domain\Errors\ParticipantLimitExceeded;
 use App\Domain\Errors\ValidationError;
+use App\Domain\Kit;
 use App\Domain\Loan;
 use LogicException;
 
@@ -27,7 +30,8 @@ use LogicException;
  *  4. Guardar kits (con su versión, ADR-002) y el préstamo.
  *
  * Los pasos 2 a 4 van dentro de una transacción: si algo falla, no se registra nada (CA-06.3).
- * Si otro mentor se llevó la última unidad entre la lectura y el guardado, save() lanza KIT_NOT_AVAILABLE (RNF-2).
+ * Si otro mentor cambió un kit entre la lectura y el guardado, save() lanza KitChanged y aquí se responde
+ * KIT_NOT_AVAILABLE (RNF-2, ADR-002). La fila del participante queda bloqueada durante la transacción (ADR-004).
  */
 final class LendKitsService
 {
@@ -55,8 +59,9 @@ final class LendKitsService
         return $this->transaction->run(function () use ($participantId, $kitIds, $loanedByUserId) {
             $now = $this->clock->now();
 
-            // 2. Reglas del participante, que miran sus otros préstamos
-            $this->participants->find($participantId) ?? throw NotFound::resource('el participante');
+            // 2. Reglas del participante, que miran sus otros préstamos.
+            //    Bloquear su fila primero: otro préstamo simultáneo para él espera y luego cuenta bien (ADR-004)
+            $this->participants->lockForLoan($participantId) ?? throw NotFound::resource('el participante');
             $openItems = $this->loans->openItemsOf($participantId);
             $overdue = count(array_filter($openItems, fn ($item) => $item->isOverdue($now)));
             if ($overdue > 0) {
@@ -81,9 +86,17 @@ final class LendKitsService
             }
             $loan = Loan::lend($this->loans->nextId(), $participantId, $loanedByUserId, $now, $lines);
 
-            // 4. Guardar: cada kit con la versión que se leyó, y después el préstamo
-            foreach ($lines as $line) {
-                $this->kits->save($line['kit']);
+            // 4. Guardar: cada kit con la versión que se leyó, y después el préstamo.
+            //    Los kits van ordenados por id para que dos préstamos con los mismos kits no se bloqueen mutuamente (ADR-004)
+            $kitsToSave = array_column($lines, 'kit');
+            usort($kitsToSave, fn (Kit $a, Kit $b) => strcmp($a->id(), $b->id()));
+            foreach ($kitsToSave as $kit) {
+                try {
+                    $this->kits->save($kit);
+                } catch (KitChanged) {
+                    // Otro mentor se llevó la unidad entre la lectura y el guardado (RNF-2)
+                    throw KitNotAvailable::named($kit->name());
+                }
             }
             $this->loans->add($loan);
 

@@ -37,7 +37,7 @@ interface KitRepository
     /**
      * Guarda los cambios con concurrencia optimista (ADR-002): UPDATE … WHERE id = ? AND version = ?, y version + 1.
      *
-     * @throws \App\Domain\Errors\KitNotAvailable si otra petición cambió el kit primero (0 filas)
+     * @throws \App\Domain\Errors\KitChanged si otra petición cambió el kit primero (0 filas)
      * @throws \App\Domain\Errors\ReferenceTaken si la nueva referencia ya la tomó otro kit activo
      */
     public function save(Kit $kit): void;

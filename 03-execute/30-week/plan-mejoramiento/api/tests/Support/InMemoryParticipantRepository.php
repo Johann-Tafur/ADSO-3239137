@@ -5,6 +5,7 @@ namespace Tests\Support;
 use App\Application\Paging\Page;
 use App\Application\Paging\PageRequest;
 use App\Application\Ports\ParticipantRepository;
+use App\Application\Support\NameOrder;
 use App\Domain\Errors\DocumentTaken;
 use App\Domain\Participant;
 use App\Domain\ValueObjects\DocumentNumber;
@@ -22,9 +23,20 @@ final class InMemoryParticipantRepository implements ParticipantRepository
         return 'participant-'.++$this->sequence;
     }
 
+    /** @var list<string> ids bloqueados con lockForLoan(), en orden (para las pruebas) */
+    public array $locked = [];
+
     public function find(string $id): ?Participant
     {
         return $this->participants[$id] ?? null;
+    }
+
+    /** En memoria no hay otras transacciones: solo anota el bloqueo para que la prueba vea que se pidió. */
+    public function lockForLoan(string $id): ?Participant
+    {
+        $this->locked[] = $id;
+
+        return $this->find($id);
     }
 
     public function findByDocument(DocumentNumber $documentNumber): ?Participant
@@ -46,7 +58,7 @@ final class InMemoryParticipantRepository implements ParticipantRepository
                 || mb_stripos($p->fullName(), $text) !== false
                 || mb_stripos($p->documentNumber()->value, $text) !== false,
         ));
-        usort($found, fn (Participant $a, Participant $b) => strcmp($a->fullName(), $b->fullName()));
+        usort($found, fn (Participant $a, Participant $b) => NameOrder::compare($a->fullName(), $b->fullName()));
 
         return new Page(array_slice($found, $page->offset(), $page->size), $page->page, $page->size, count($found));
     }

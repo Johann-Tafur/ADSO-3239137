@@ -4,7 +4,7 @@ namespace Tests\Unit\Application;
 
 use App\Application\Services\CreateKitService;
 use App\Application\Services\UpdateKitService;
-use App\Domain\Errors\KitNotAvailable;
+use App\Domain\Errors\KitChanged;
 use App\Domain\Errors\NotFound;
 use App\Domain\Errors\ReferenceTaken;
 use App\Domain\Errors\TotalBelowLoaned;
@@ -111,7 +111,7 @@ final class UpdateKitServiceTest extends TestCase
         $this->kits->save($first);
 
         $late->changeTotal(new Units(10));
-        $this->expectException(KitNotAvailable::class);
+        $this->expectException(KitChanged::class);
         $this->kits->save($late);
     }
 }

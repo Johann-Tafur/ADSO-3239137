@@ -6,7 +6,8 @@ use App\Application\Paging\Page;
 use App\Application\Paging\PageRequest;
 use App\Application\Ports\KitRepository;
 use App\Application\Results\KitView;
-use App\Domain\Errors\KitNotAvailable;
+use App\Application\Support\NameOrder;
+use App\Domain\Errors\KitChanged;
 use App\Domain\Errors\ReferenceTaken;
 use App\Domain\Kit;
 use App\Domain\ValueObjects\KitReference;
@@ -62,7 +63,7 @@ final class InMemoryKitRepository implements KitRepository, Snapshottable
 
             return $kit->isActive() && $matchesText && ($categoryId === null || $kit->categoryId() === $categoryId);
         });
-        usort($found, fn (Kit $a, Kit $b) => strcmp($a->name(), $b->name()));
+        usort($found, fn (Kit $a, Kit $b) => NameOrder::compare($a->name(), $b->name()));
 
         $items = array_map(
             fn (Kit $kit) => new KitView(self::copy($kit, $kit->version()), $this->categories->find($kit->categoryId())),
@@ -87,7 +88,7 @@ final class InMemoryKitRepository implements KitRepository, Snapshottable
             $this->failNextSaveOf = null;
         }
         if ($lostTheRace || $current === null || $current->version() !== $kit->version()) {
-            throw KitNotAvailable::named($kit->name());
+            throw KitChanged::kit($kit->name());
         }
         $this->assertReferenceFree($kit);
         $this->stored[$kit->id()] = self::copy($kit, $kit->version() + 1);

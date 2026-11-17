@@ -3,6 +3,7 @@
 namespace Tests\Support;
 
 use App\Application\Ports\CategoryRepository;
+use App\Application\Support\NameOrder;
 use App\Domain\Category;
 
 /** Fake de CategoryRepository con las mismas cinco categorías y UUID que siembra la migración. */
@@ -34,7 +35,7 @@ final class InMemoryCategoryRepository implements CategoryRepository
     public function all(): array
     {
         $all = array_values($this->categories);
-        usort($all, fn (Category $a, Category $b) => strcmp($a->name, $b->name));
+        usort($all, fn (Category $a, Category $b) => NameOrder::compare($a->name, $b->name));
 
         return $all;
     }

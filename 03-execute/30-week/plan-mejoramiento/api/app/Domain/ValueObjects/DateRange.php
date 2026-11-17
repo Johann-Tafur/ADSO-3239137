@@ -3,6 +3,7 @@
 namespace App\Domain\ValueObjects;
 
 use App\Domain\Errors\InvalidDateRange;
+use App\Domain\Errors\ValidationError;
 use DateTimeImmutable;
 use DateTimeZone;
 
@@ -29,6 +30,16 @@ final readonly class DateRange
         $this->to = $to;
     }
 
+    /**
+     * Arma el rango desde dos fechas de calendario «AAAA-MM-DD» (los `from` y `to` de la API), leídas siempre en UTC.
+     * No depende de la zona horaria del servidor: «2026-11-01» es el 1 de noviembre en cualquier máquina.
+     * Una fecha mal escrita o inexistente (2026-02-30) → VALIDATION_ERROR en ese campo.
+     */
+    public static function fromDates(string $from, string $to): self
+    {
+        return new self(self::parseDate($from, 'from'), self::parseDate($to, 'to'));
+    }
+
     /** Primer instante incluido. */
     public function startsAt(): DateTimeImmutable
     {
@@ -44,6 +55,16 @@ final readonly class DateRange
     public function contains(DateTimeImmutable $instant): bool
     {
         return $instant >= $this->startsAt() && $instant < $this->endsBefore();
+    }
+
+    private static function parseDate(string $value, string $field): DateTimeImmutable
+    {
+        $date = DateTimeImmutable::createFromFormat('!Y-m-d', trim($value), new DateTimeZone('UTC'));
+        if ($date === false || $date->format('Y-m-d') !== trim($value)) {
+            throw ValidationError::forField($field, 'fecha AAAA-MM-DD', "La fecha «{$value}» no es válida; usa el formato AAAA-MM-DD.");
+        }
+
+        return $date;
     }
 
     private static function startOfDayUtc(DateTimeImmutable $date): DateTimeImmutable

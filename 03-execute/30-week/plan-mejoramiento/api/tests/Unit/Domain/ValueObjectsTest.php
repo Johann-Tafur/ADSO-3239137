@@ -148,4 +148,36 @@ final class ValueObjectsTest extends TestCase
 
         $this->assertEquals(new DateTimeImmutable('2026-11-16T00:00:00Z'), $range->startsAt());
     }
+
+    public function test_calendar_dates_do_not_depend_on_the_server_timezone(): void
+    {
+        $original = date_default_timezone_get();
+        date_default_timezone_set('Asia/Tokyo'); // UTC+9: «2026-11-01» local sería 31-oct en UTC
+        try {
+            $range = DateRange::fromDates('2026-11-01', '2026-11-30');
+        } finally {
+            date_default_timezone_set($original);
+        }
+
+        $this->assertEquals(new DateTimeImmutable('2026-11-01T00:00:00Z'), $range->startsAt());
+        $this->assertEquals(new DateTimeImmutable('2026-12-01T00:00:00Z'), $range->endsBefore());
+    }
+
+    public function test_a_badly_written_or_impossible_date_is_a_validation_error(): void
+    {
+        foreach ([['2026-02-30', 'from'], ['01/11/2026', 'from'], ['', 'from']] as [$bad, $field]) {
+            try {
+                DateRange::fromDates($bad, '2026-11-30');
+                $this->fail("Debió rechazar «{$bad}»");
+            } catch (\App\Domain\Errors\ValidationError $error) {
+                $this->assertSame($field, $error->details()[0]['field']);
+            }
+        }
+    }
+
+    public function test_from_dates_also_rejects_an_inverted_range(): void
+    {
+        $this->expectException(InvalidDateRange::class);
+        DateRange::fromDates('2026-11-30', '2026-11-01');
+    }
 }
