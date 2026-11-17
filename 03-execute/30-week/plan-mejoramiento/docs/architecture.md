@@ -75,13 +75,16 @@ sequenceDiagram
     participant S as LendKitsService
     participant L as LoanRepository
     participant K as KitRepository
+    participant P as ParticipantRepository
     C->>S: lend(participantId, kitIds, userId)
+    S->>P: lockForLoan(participantId)
+    Note over P: SELECT … FOR UPDATE (ADR-004)
     S->>L: openItemsOf(participantId)
     Note over S: ¿vencidos? → 409 · ¿más de 2? → 422
     S->>K: findActive(kitId), uno por kit
     Note over S: Loan::lend() → Kit::withdraw()
-    S->>K: save(kit), con la versión que se leyó
-    Note over K: 0 filas afectadas → 409 KIT_NOT_AVAILABLE
+    S->>K: save(kit), ordenados por id, con la versión que se leyó
+    Note over K: 0 filas afectadas → KitChanged → 409 KIT_NOT_AVAILABLE
     S->>L: add(loan)
     Note over S,L: todo dentro de TransactionRunner
 ```
