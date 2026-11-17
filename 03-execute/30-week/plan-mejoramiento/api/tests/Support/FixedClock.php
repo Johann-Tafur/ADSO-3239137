@@ -21,6 +21,12 @@ final class FixedClock implements Clock
         return $this->now;
     }
 
+    /** Pone el reloj en un instante exacto. Ejemplo: set('2026-11-30T23:59:59Z'). */
+    public function set(string $instant): void
+    {
+        $this->now = (new DateTimeImmutable($instant))->setTimezone(new DateTimeZone('UTC'));
+    }
+
     /** Ejemplo: advance('+12 days'), advance('+1 second'). */
     public function advance(string $modifier): void
     {

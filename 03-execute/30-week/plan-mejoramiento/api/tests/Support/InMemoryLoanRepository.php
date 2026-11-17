@@ -109,6 +109,12 @@ final class InMemoryLoanRepository implements LoanRepository, Snapshottable
         return count($this->loans);
     }
 
+    /** @return list<Loan> todos los préstamos guardados (los usa InMemoryReportReader) */
+    public function all(): array
+    {
+        return array_values(array_map(fn (Loan $loan) => self::copy($loan), $this->loans));
+    }
+
     /** Los préstamos guardados nunca se modifican (markReturned() guarda uno nuevo), así que basta copiar el arreglo. */
     public function snapshot(): mixed
     {
