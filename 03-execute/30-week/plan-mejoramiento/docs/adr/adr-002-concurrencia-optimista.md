@@ -24,9 +24,12 @@ una sola unidad, y `available_units` en 0 o en -1 según el orden.
     WHERE id = ? AND version = ?   -- la versión que se leyó
    ```
 
-3. Si el `UPDATE` afecta **0 filas**, otra petición cambió el kit primero: `KitRepository` lanza `KitNotAvailable`, la
-   transacción (`TransactionRunner`) se deshace completa y la API responde **409 `KIT_NOT_AVAILABLE`**. No se guarda el préstamo
-   ni ninguna de sus líneas.
+3. Si el `UPDATE` afecta **0 filas**, otra petición cambió el kit primero: `KitRepository` lanza `KitChanged` y la
+   transacción (`TransactionRunner`) se deshace completa.
+   - Al **prestar**, `LendKitsService` lo traduce a **409 `KIT_NOT_AVAILABLE`** (RNF-2): no se guarda el préstamo ni ninguna de
+     sus líneas.
+   - En las demás escrituras del kit (editar, dar de baja, foto, **devolver**) la API responde **409 `KIT_CHANGED`**. Decir «no
+     quedan unidades» a quien está devolviendo o editando sería falso.
 4. **Sin reintento automático.** El mentor que pierde ve el error y decide qué hacer.
 5. Última barrera en la base: `ck_kit_available_range` (`0 <= available_units <= total_units`). Si algo se escapara del código,
    PostgreSQL rechaza el valor imposible.
@@ -51,3 +54,5 @@ una sola unidad, y `available_units` en 0 o en -1 según el orden.
 **En contra**
 - Toda escritura del kit debe pasar la `version` leída y subirla; un `UPDATE` que la olvide rompe la protección.
 - Con mucha demanda sobre el mismo kit, varios mentores pueden recibir 409 seguidos y tener que intentar de nuevo.
+- La versión protege las unidades del kit, no el límite de 2 kits por participante: eso lo resuelve
+  [ADR-004](adr-004-bloqueo-del-participante.md).
