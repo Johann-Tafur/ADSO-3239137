@@ -10,9 +10,9 @@ y se deja escrito por qué.
 | D-01 | Lenguaje del backend | **PHP 8.3** | Stack del plan de mejoramiento |
 | D-02 | Framework HTTP | **Laravel**: rutas en `routes/api.php`, controladores como adaptador de entrada | Cumple [`api-contract.md`](api-contract.md) sin que el dominio dependa del framework (artículo I) |
 | D-03 | Persistencia | **Migraciones de Laravel** sobre **PostgreSQL 16**, esquema `robotics`; repositorios con el Query Builder (sin Eloquent en el dominio) | [ADR-001](adr/adr-001-propiedad-del-esquema.md): el esquema es de las migraciones |
-| D-04 | Concurrencia | Columna `kit.version` + `UPDATE … WHERE id = ? AND version = ?`; si afecta 0 filas → 409 `KIT_NOT_AVAILABLE`, **sin reintento**. Última barrera: `ck_kit_available_range` | [ADR-002](adr/adr-002-concurrencia-optimista.md), RNF-2 |
+| D-04 | Concurrencia | Columna `kit.version` + `UPDATE … WHERE id = ? AND version = ?`; si afecta 0 filas → 409 `KIT_NOT_AVAILABLE` al prestar y `KIT_CHANGED` en las demás escrituras, **sin reintento**. El límite por participante lo protege el bloqueo de su fila ([ADR-004](adr/adr-004-bloqueo-del-participante.md)). Última barrera: `ck_kit_available_range` | [ADR-002](adr/adr-002-concurrencia-optimista.md), RNF-2 |
 | D-05 | Fechas | `timestamptz` y puerto `Clock`; en pruebas un `FixedClock` | Probar vencimientos sin esperar 12 días (RN-6) |
-| D-06 | Reporte | Puerto `ReportReader`, una sola consulta `GROUP BY kit_id, kit_name, category_name` sobre `loan_item` | Lee lo congelado, no el catálogo vivo (artículo VIII) |
+| D-06 | Reporte | Puerto `ReportReader`, una sola consulta sobre `loan_item` unida con `loan` (que tiene `loaned_at`, filtrado con el índice `ix_loan_loaned_at`), `GROUP BY kit_id, kit_name, category_name` | Lee lo congelado, no el catálogo vivo (artículo VIII) |
 | D-07 | Objetos de valor | Clases PHP `final readonly` en `app/Domain/ValueObjects`: `KitReference`, `Units`, `DocumentNumber`, `DateRange` | No tienen identidad, no tienen tabla |
 | D-08 | Fotos | Puerto `PhotoStorage`; adaptador `LocalDiskPhotoStorage` (`storage/app/photos`). Cambiar a la nube = una línea en la composición | OCP (artículo IV) |
 | D-09 | Contraseñas | `password_hash(..., PASSWORD_ARGON2ID)` detrás del puerto `PasswordHasher` | Artículo IX, RNF-3 |
