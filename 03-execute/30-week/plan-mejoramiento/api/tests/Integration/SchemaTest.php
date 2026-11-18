@@ -3,13 +3,12 @@
 namespace Tests\Integration;
 
 use Illuminate\Support\Facades\DB;
-use Tests\TestCase;
 
 /**
  * T-02: el esquema real coincide con docs/data-model.md (consultas de §10).
- * Necesita la base de infra encendida y `php artisan migrate` ya ejecutado.
+ * Necesita la base de infra encendida; las migraciones las corre IntegrationTestCase en robotics_test.
  */
-final class SchemaTest extends TestCase
+final class SchemaTest extends IntegrationTestCase
 {
     public function test_robotics_has_exactly_the_six_tables_of_the_data_model(): void
     {

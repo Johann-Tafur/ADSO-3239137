@@ -97,6 +97,8 @@ return [
             'prefix_indexes' => true,
             // Primero el esquema del negocio; public queda para la tabla de control de migraciones (plan H-03)
             'search_path' => env('DB_SCHEMA', 'robotics').',public',
+            // Cada sesión en UTC: las marcas timestamptz se leen y escriben siempre en UTC (RN-6), sin importar el servidor
+            'timezone' => 'UTC',
             'sslmode' => env('DB_SSLMODE', 'prefer'),
         ],
 
