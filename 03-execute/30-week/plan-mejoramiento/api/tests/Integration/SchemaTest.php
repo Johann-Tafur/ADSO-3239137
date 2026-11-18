@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\DB;
 
 /**
  * T-02: el esquema real coincide con docs/data-model.md (consultas de §10).
- * Necesita la base de infra encendida; las migraciones las corre IntegrationTestCase en robotics_test.
+ * Necesita la base de infra encendida; las migraciones las corre MigratesOnce en robotics_test.
  */
 final class SchemaTest extends IntegrationTestCase
 {
