@@ -128,6 +128,9 @@ Kit (respuesta):
 `POST /kits` (petición): `name`, `manufacturer`, `reference`, `category_id`, `total_units`. Las disponibles las calcula el servidor.
 `photo_key` es una clave opaca: para mostrar la foto se usa `GET /kits/{id}/photo`.
 
+Subir la foto: PHP solo lee archivos `multipart/form-data` en peticiones `POST`. Por eso el cliente envía
+`POST /kits/{id}/photo` con el campo `_method=PUT` además de `file`, y Laravel la atiende como el `PUT` de la tabla.
+
 ### 3.5 Participantes
 
 | Método | Ruta | Rol | Descripción |
