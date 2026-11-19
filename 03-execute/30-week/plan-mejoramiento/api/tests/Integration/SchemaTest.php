@@ -85,16 +85,16 @@ final class SchemaTest extends IntegrationTestCase
         ], array_map(fn ($row) => [$row->id, $row->name], $categories));
     }
 
-    public function test_pending_t18_checks_are_not_in_the_engine_yet(): void
+    public function test_the_four_checks_of_section_four_are_in_the_engine(): void
     {
         $checks = $this->column(
             "SELECT c.conname FROM pg_constraint c JOIN pg_namespace n ON n.oid = c.connamespace
-             WHERE n.nspname = 'robotics' AND c.contype = 'c'",
+             WHERE n.nspname = 'robotics' AND c.contype = 'c' ORDER BY 1",
             'conname',
         );
 
-        // data-model.md §4 los marca «pendiente (T-18)». Cuando T-18 los baje, esta prueba se cambia junto con el documento.
-        $this->assertSame(['ck_kit_available_range'], $checks);
+        // data-model.md §4: ck_kit_available_range desde T-02; los otros tres los bajó T-18
+        $this->assertSame(['ck_kit_available_range', 'ck_kit_reference_format', 'ck_kit_total_positive', 'ck_user_role'], $checks);
     }
 
     /** @return list<string> */
