@@ -1,0 +1,11 @@
+# Lo que NO entra a la imagen de la API: secretos, dependencias locales y archivos generados
+.env
+.env.*
+!.env.example
+vendor
+node_modules
+storage/logs/*
+storage/framework/cache/*
+storage/framework/views/*
+storage/app/photos/*
+.phpunit.result.cache
