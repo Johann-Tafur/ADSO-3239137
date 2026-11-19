@@ -27,7 +27,7 @@ final class LoginService
     /** Hash de relleno para verificar aunque el usuario no exista; se calcula una sola vez. */
     private ?string $decoyHash = null;
 
-    public function login(string $username, string $password): AccessToken
+    public function login(string $username, #[\SensitiveParameter] string $password): AccessToken
     {
         try {
             $user = $this->users->findByUsername(User::normalizeUsername($username));

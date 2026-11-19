@@ -27,7 +27,7 @@ final class CreateMentorService
         private readonly PasswordHasher $hasher,
     ) {}
 
-    public function create(string $username, string $password, string $role): User
+    public function create(string $username, #[\SensitiveParameter] string $password, string $role): User
     {
         // 1. Validar la entrada
         $role = Role::fromName($role);
