@@ -1,5 +1,8 @@
 name: robotics
 
+# `docker compose up` levanta la base vacía, la API y la app (T-20, RNF-5).
+# Para desarrollar con `php artisan serve` y `npm run dev` basta la base: `docker compose up -d db`.
+
 services:
   db:
     image: postgres:16-alpine
@@ -10,7 +13,7 @@ services:
       TZ: UTC
       PGTZ: UTC
     ports:
-      - "5432:5432"
+      - "${DB_PORT:-5432}:5432"
     volumes:
       - db-data:/var/lib/postgresql/data
       # Scripts que PostgreSQL corre al crear el volumen por primera vez (crea robotics_test)
@@ -21,5 +24,51 @@ services:
       timeout: 3s
       retries: 10
 
+  api:
+    build:
+      context: ../api
+      dockerfile: ../infra/api.Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy     # la API migra al arrancar: espera a que la base acepte conexiones
+    environment:
+      APP_NAME: Robotics
+      APP_ENV: production
+      APP_DEBUG: "false"
+      APP_KEY: ${APP_KEY}
+      APP_LOCALE: es
+      LOG_CHANNEL: stderr
+      DB_CONNECTION: pgsql
+      DB_HOST: db
+      DB_PORT: "5432"
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_SCHEMA: robotics
+      SESSION_DRIVER: array
+      CACHE_STORE: file
+      QUEUE_CONNECTION: sync
+      JWT_SECRET: ${JWT_SECRET}
+      ADMIN_USERNAME: ${ADMIN_USERNAME}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      CORS_ORIGIN: http://localhost:${APP_PORT:-5173}
+      PHP_CLI_SERVER_WORKERS: "4"
+    ports:
+      - "${API_PORT:-8000}:8000"
+    volumes:
+      - photos:/var/www/api/storage/app/photos   # las fotos sobreviven a reconstruir la imagen
+
+  app:
+    build:
+      context: ../app
+      dockerfile: ../infra/app.Dockerfile
+      args:
+        VITE_API_URL: http://localhost:${API_PORT:-8000}/api/v1
+    depends_on:
+      - api
+    ports:
+      - "${APP_PORT:-5173}:80"
+
 volumes:
   db-data:
+  photos:

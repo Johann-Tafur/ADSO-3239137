@@ -5,17 +5,31 @@ Levanta el sistema con un solo comando. La base de datos arranca **vacía**: el 
 ## Uso
 
 ```bash
-cp .env.example .env   # y cambia la clave
-docker compose up -d
+cp .env.example .env   # y completa las claves (el archivo explica cómo generarlas)
+docker compose up      # base, API y app (T-20)
+```
+
+Abre la app en `http://localhost:5173` y entra con `ADMIN_USERNAME` / `ADMIN_PASSWORD` del `.env`.
+
+Al arrancar, la API espera a que la base esté lista, corre `migrate` (crea el esquema si está vacía) y
+`robotics:ensure-admin` (crea el admin si no existe). La base nace **sin tablas** hasta ese momento.
+
+Para desarrollar con `php artisan serve` y `npm run dev` basta la base:
+
+```bash
+docker compose up -d db
 ```
 
 ## Servicios
 
-| Servicio | Qué es | Puerto |
-|---|---|---|
-| `db` | PostgreSQL 16, vacío, en UTC | 5432 |
+| Servicio | Qué es | Puerto | Imagen |
+|---|---|---|---|
+| `db` | PostgreSQL 16, vacío, en UTC | 5432 | `postgres:16-alpine` |
+| `api` | Laravel con PHP 8.3 | `API_PORT`, por defecto 8000 | [`api.Dockerfile`](api.Dockerfile) |
+| `app` | React compilada, servida por nginx | `APP_PORT`, por defecto 5173 | [`app.Dockerfile`](app.Dockerfile) |
 
-Los servicios `api` y `app` se agregan en la tarea T-20.
+Los `Dockerfile` viven aquí porque son parte del despliegue; cada uno tiene su `.dockerignore` al lado (los secretos y
+las dependencias locales nunca entran a una imagen). Las fotos de kits se guardan en el volumen `photos`.
 
 ## Bases de datos
 
