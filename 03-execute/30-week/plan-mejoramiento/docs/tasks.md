@@ -38,10 +38,10 @@ La base de datos existe desde el día 1: `infra/compose.yaml` levanta PostgreSQL
 | T-17 | Composición y arranque (admin inicial desde entorno) | T-16 | Con la base vacía, tras `migrate` y `robotics:ensure-admin`, se inicia sesión como admin · `tests/Feature/EnsureAdminTest.php` | **hecha** |
 | T-18 | Bajar a la base `ck_kit_total_positive`, `ck_user_role` y `ck_kit_reference_format` | T-12 | Un `INSERT` por `psql` que las viole falla; `data-model.md` §4 se actualiza · `tests/Integration/DomainChecksTest.php` y migración `2026_11_18_000001_add_domain_checks` | **hecha** |
 | T-19 | Pruebas de arquitectura (artículos I, II y III) | T-01 | `tests/Architecture/LayerDependenciesTest.php` pasa, y falla si se introduce una importación prohibida. Se escribe al empezar el dominio y corre con cada tarea | **hecha** |
-| T-20 | `infra`: `docker compose up` levanta base vacía, API y app | T-17 | Un comando; la base arranca sin tablas hasta que corren las migraciones | pendiente |
-| T-21 | `tool`: sembrador de demostración **por la API** (≥ 40 kits, 10 participantes, 15 préstamos) | T-17 | Tras correrlo, `/kits` devuelve ≥ 40 y el reporte tiene filas; con `--kits 5000` mide `GET /kits` con búsqueda e imprime el tiempo, y termina con error si pasa de 300 ms (RNF-1) | pendiente |
-| T-22 | `app`: login, kits, participantes, prestar, devolver, vencidos, reporte, mentores | T-16 | Guion de recorrido en `app/README.md` con los dos roles: cada paso con su resultado esperado, repetido de punta a punta | pendiente |
-| T-23 | `page`: sitio público estático que presenta el producto | — | Guion en `page/README.md`: se abre sin la API; se ve bien en móvil y escritorio | pendiente |
+| T-20 | `infra`: `docker compose up` levanta base vacía, API y app | T-17 | Un comando; la base arranca sin tablas hasta que corren las migraciones · verificado con un volumen nuevo: la API corre las 2 migraciones, crea el admin y nginx sirve la app (`infra/README.md`) | **hecha** |
+| T-21 | `tool`: sembrador de demostración **por la API** (≥ 40 kits, 10 participantes, 15 préstamos) | T-17 | Tras correrlo, `/kits` devuelve ≥ 40 y el reporte tiene filas; con `--kits 5000` mide `GET /kits` con búsqueda e imprime el tiempo, y termina con error si pasa de 300 ms (RNF-1) · `tool/README.md`; medido el 19-nov con 5040 kits: mediana **37,7 ms** | **hecha** |
+| T-22 | `app`: login, kits, participantes, prestar, devolver, vencidos, reporte, mentores | T-16 | Guion de recorrido en `app/README.md` con los dos roles: cada paso con su resultado esperado, repetido de punta a punta | **hecha** |
+| T-23 | `page`: sitio público estático que presenta el producto | — | Guion en `page/README.md`: se abre sin la API; se ve bien en móvil y escritorio | **hecha** |
 
 ## Trazabilidad
 
