@@ -177,6 +177,66 @@ code {
   color: var(--accent);
 }
 
+/* Portada en dos columnas: texto e ilustración */
+.hero-grid {
+  display: grid;
+  gap: 2rem;
+  align-items: center;
+}
+.highlight {
+  background: linear-gradient(transparent 60%, var(--accent-soft) 60%);
+  padding: 0 .1em;
+}
+.hero-art { width: min(100%, 22rem); justify-self: center; overflow: visible; }
+
+/* Colores de la ilustración: salen de las variables, así cambian solos en modo oscuro */
+.art-glow { fill: var(--accent-soft); }
+.art-body { fill: var(--paper); stroke: var(--ink); stroke-width: 4; }
+.art-screen { fill: var(--ink); }
+.art-eye { fill: var(--accent); }
+.art-smile { fill: none; stroke: var(--accent); stroke-width: 4; stroke-linecap: round; }
+.art-line { stroke: var(--ink); stroke-width: 4; }
+.art-accent { fill: var(--accent); }
+.art-limb { fill: var(--ink); }
+.art-box rect { fill: #f4b740; stroke: var(--ink); stroke-width: 4; }
+.art-box path { stroke: var(--ink); stroke-width: 4; }
+.art-box text { font: 700 16px var(--font); fill: var(--ink); }
+
+/* Movimientos suaves: el robot flota y la luz de la antena parpadea */
+.art-robot { animation: float 4s ease-in-out infinite; transform-origin: center; }
+.art-box { animation: float 4s ease-in-out infinite .4s; }
+.art-blink { animation: blink 2.4s ease-in-out infinite; }
+@keyframes float { 50% { transform: translateY(-8px); } }
+@keyframes blink { 50% { opacity: .35; } }
+@media (prefers-reduced-motion: reduce) {
+  .art-robot, .art-box, .art-blink { animation: none; }
+}
+
+/* ---------- Cifras ---------- */
+.stats {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 2rem 0;
+}
+.stats-list {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: repeat(2, 1fr);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.stats-list li { display: grid; gap: .25rem; }
+.stats-list strong {
+  font-size: clamp(2.25rem, 6vw, 3.25rem);
+  line-height: 1;
+  color: #4fd1a5;               /* verde claro: se lee bien sobre la franja oscura (contraste 8:1) */
+}
+.stats-list span { font-size: .95rem; opacity: .9; }
+@media (prefers-color-scheme: dark) {
+  .stats { background: var(--paper-alt); color: var(--ink); }
+}
+
 /* ---------- Secciones ---------- */
 .section { padding: clamp(2.5rem, 6vw, 4.5rem) 0; }
 .section-alt { background: var(--paper-alt); }
@@ -287,6 +347,10 @@ code {
   .cards { grid-template-columns: repeat(2, 1fr); }
   .rules { grid-template-columns: repeat(2, 1fr); }
   .steps { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 48rem) {
+  .hero-grid { grid-template-columns: 1.3fr 1fr; }
+  .stats-list { grid-template-columns: repeat(4, 1fr); }
 }
 @media (min-width: 64rem) {
   .cards { grid-template-columns: repeat(4, 1fr); }

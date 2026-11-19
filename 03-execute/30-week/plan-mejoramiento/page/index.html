@@ -30,17 +30,56 @@
 
   <main id="contenido">
     <section id="inicio" class="hero">
+      <div class="container hero-grid">
+        <div class="hero-text">
+          <p class="eyebrow">Robótica educativa</p>
+          <h1>Cada kit del semillero, en <span class="highlight">buenas manos</span> y de vuelta a tiempo</h1>
+          <p class="lead">
+            Robotics lleva el catálogo de kits, los participantes y cada préstamo. Sabe cuántas unidades quedan,
+            quién tiene qué y qué está vencido, y muestra qué kits se piden más.
+          </p>
+          <p class="hero-actions">
+            <a class="button" href="#como-funciona">Ver cómo funciona</a>
+            <a class="button button-secondary" href="#roles">¿Quién lo usa?</a>
+          </p>
+        </div>
+
+        <!-- Ilustración: un robot entregando un kit. SVG dentro del HTML: sin archivos ni librerías externas. -->
+        <svg class="hero-art" viewBox="0 0 320 300" role="img" aria-labelledby="hero-art-title">
+          <title id="hero-art-title">Un robot sonriente entrega una caja de kit de robótica</title>
+          <circle class="art-glow" cx="160" cy="160" r="130" />
+          <g class="art-robot">
+            <line class="art-line" x1="160" y1="40" x2="160" y2="68" />
+            <circle class="art-accent art-blink" cx="160" cy="34" r="9" />
+            <rect class="art-body" x="100" y="68" width="120" height="90" rx="22" />
+            <rect class="art-screen" x="116" y="86" width="88" height="54" rx="12" />
+            <circle class="art-eye" cx="142" cy="110" r="8" />
+            <circle class="art-eye" cx="178" cy="110" r="8" />
+            <path class="art-smile" d="M144 126 Q160 138 176 126" />
+            <rect class="art-body" x="118" y="166" width="84" height="74" rx="16" />
+            <circle class="art-accent" cx="160" cy="190" r="7" />
+            <rect class="art-limb" x="72" y="174" width="40" height="16" rx="8" transform="rotate(-25 92 182)" />
+            <rect class="art-limb" x="206" y="176" width="44" height="16" rx="8" />
+            <rect class="art-limb" x="128" y="240" width="20" height="30" rx="8" />
+            <rect class="art-limb" x="172" y="240" width="20" height="30" rx="8" />
+          </g>
+          <g class="art-box">
+            <rect x="232" y="150" width="62" height="52" rx="6" />
+            <path d="M232 166 H294" />
+            <text x="263" y="190" text-anchor="middle">KIT</text>
+          </g>
+        </svg>
+      </div>
+    </section>
+
+    <section class="stats" aria-label="Las reglas en cifras">
       <div class="container">
-        <p class="eyebrow">Robótica educativa</p>
-        <h1>Cada kit del semillero, en buenas manos y de vuelta a tiempo</h1>
-        <p class="lead">
-          Robotics lleva el catálogo de kits, los participantes y cada préstamo. Sabe cuántas unidades quedan,
-          quién tiene qué y qué está vencido, y muestra qué kits se piden más.
-        </p>
-        <p class="hero-actions">
-          <a class="button" href="#como-funciona">Ver cómo funciona</a>
-          <a class="button button-secondary" href="#roles">¿Quién lo usa?</a>
-        </p>
+        <ul class="stats-list">
+          <li><strong>12</strong><span>días de préstamo por kit</span></li>
+          <li><strong>2</strong><span>kits como máximo por persona</span></li>
+          <li><strong>5</strong><span>categorías: iniciación, sensores, drones, impresión 3D y competencia</span></li>
+          <li><strong>0</strong><span>préstamos dobles de la última unidad</span></li>
+        </ul>
       </div>
     </section>
 
