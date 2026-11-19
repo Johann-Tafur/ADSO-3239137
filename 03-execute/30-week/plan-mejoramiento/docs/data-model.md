@@ -140,9 +140,9 @@ porque ningún requisito las pide.
 | `loan_item.kit_id` → `kit.id` RESTRICT | FK | **motor** |
 | `0 <= available_units <= total_units` | `ck_kit_available_range` | **motor** — última barrera de concurrencia (RN-1) |
 | Único `(loan_id, kit_id)` | índice único | **motor** (CA-06.2) |
-| `total_units >= 1` | `ck_kit_total_positive` | **pendiente (T-18)** · hoy solo dominio |
-| `role` en (`admin`, `mentor`) | `ck_user_role` | **pendiente (T-18)** · hoy solo dominio |
-| `reference` con formato `AAA-0000` | `ck_kit_reference_format` | **pendiente (T-18)** · hoy solo dominio |
+| `total_units >= 1` | `ck_kit_total_positive` | **motor** (T-18) y dominio (`Units`) |
+| `role` en (`admin`, `mentor`) | `ck_user_role` | **motor** (T-18) y dominio (`Role`) |
+| `reference` con formato `AAA-0000` | `ck_kit_reference_format` | **motor** (T-18) y dominio (`KitReference`) |
 | Máximo 2 kits sin devolver por participante | — | **solo dominio** (no expresable en un `CHECK`) |
 | Participante con vencidos no pide | — | **solo dominio** |
 | Descontar unidad y crear línea son una operación | — | **solo dominio** (una transacción) |
