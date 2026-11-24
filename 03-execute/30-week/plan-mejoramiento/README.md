@@ -1,4 +1,4 @@
-Este proyecto es la solución del plan de mejoramiento del aprendiz A10, ficha 3239137, dominio robotics.
+Este proyecto es la solución del llamado de atención académico No. 1 del aprendiz A10, ficha 3239137, dominio robotics.
 
 # Robotics — Préstamo de kits de robótica educativa
 
@@ -18,3 +18,9 @@ Sistema para que un semillero de robótica lleve su catálogo de kits, sus parti
 ## Cómo empezar
 
 Lee primero [`docs/spec.md`](docs/spec.md) y [`docs/constitution.md`](docs/constitution.md).
+
+## Compromiso académico
+
+El compromiso está en el acta [`Llamado-Atencion1-A10.pdf`](Llamado-Atencion1-A10.pdf) (versión con código, sin datos
+personales). Reemplaza al plan de mejoramiento anterior; la carpeta conserva el nombre `plan-mejoramiento/`, que es la
+indicada para la entrega.
